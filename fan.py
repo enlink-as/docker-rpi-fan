@@ -32,7 +32,7 @@ import RPi.GPIO as GPIO
 
 DESIRED_TEMP = float(os.getenv('DESIRED_TEMP', 40))
 
-FAN_PIN = int(os.getenv('FAN_PIN', 13))
+FAN_PIN = int(os.getenv('FAN_PIN', 18))
 FAN_PWM_MIN = int(os.getenv('FAN_PWM_MIN', 20))
 FAN_PWM_MAX = int(os.getenv('FAN_PWM_MAX', 100))
 FAN_PWM_FREQ = int(os.getenv('FAN_PWM_FREQ', 17))
@@ -44,8 +44,6 @@ READ_INTERVAL = int(os.getenv('READ_INTERVAL', 2))
 
 fanSpeed = FAN_PWM_MAX
 sum = 0
-pTemp = 18
-iTemp = 0.3
 
 
 def getCPUtemperature():
@@ -65,20 +63,19 @@ def handleFan():
     actualTemp = float(getCPUtemperature())
     diff = actualTemp - DESIRED_TEMP
     sum = sum + diff
-    pDiff = diff * pTemp
-    iDiff = sum * iTemp
+    pDiff = diff * P_TEMP
+    iDiff = sum * I_TEMP
     fanSpeed = pDiff + iDiff
 
     if fanSpeed > FAN_PWM_MAX:
         fanSpeed = FAN_PWM_MAX
     if fanSpeed < FAN_PWM_MIN:
-        fanSpeed = 0
+        fanSpeed = FAN_PWM_MIN
     if sum > 100:
         sum = 100
     if sum < -100:
         sum = -100
-    # print("actualTemp %4.2f TempDiff %4.2f pDiff %4.2f iDiff %4.2f fanSpeed %5d" % (
-    #     actualTemp, diff, pDiff, iDiff, fanSpeed))
+    print("actualTemp %4.2f TempDiff %4.2f pDiff %4.2f iDiff %4.2f fanSpeed %5d" % (actualTemp, diff, pDiff, iDiff, fanSpeed))
     myPWM.ChangeDutyCycle(fanSpeed)
     return()
 
@@ -95,6 +92,7 @@ try:
     while True:
         handleFan()
         sleep(READ_INTERVAL)
+        
 except KeyboardInterrupt:
     fanOFF()
 finally:
