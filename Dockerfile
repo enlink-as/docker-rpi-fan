@@ -1,5 +1,5 @@
 # Builder
-FROM python:3.11-slim@sha256:996c5fa16c8a1ffdfe757c90ab1b61d28b861c2c0edd71aaf8f7c95ffc08dacd as builder
+FROM python:3.9-slim@sha256:ec4dbd81e414a6a55d6393835daeeb280159043fa4dc684bd58c8be7ef114ec3 as builder
 
 COPY ./requirements.txt ./
 
@@ -8,7 +8,7 @@ RUN apt update \
     && pip3 install --user -r requirements.txt
 
 # Executor
-FROM python:3.11-slim@sha256:996c5fa16c8a1ffdfe757c90ab1b61d28b861c2c0edd71aaf8f7c95ffc08dacd
+FROM python:3.9-slim@sha256:ec4dbd81e414a6a55d6393835daeeb280159043fa4dc684bd58c8be7ef114ec3
 
 WORKDIR /app
 
